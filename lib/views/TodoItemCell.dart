@@ -8,20 +8,11 @@ import 'package:todo/models/TodoItemModel.dart';
 /// from 0 to 128 as ther animation varies from 0.0 to 1.0.
 
 class TodoItemCell extends StatefulWidget {
-  final Animation<double> animation;
-  final VoidCallback onTap;
+  final DismissDirectionCallback onDelete;
   final TodoItemModel item;
-  final bool selected;
 
-  TodoItemCell(
-      {Key key,
-      @required this.animation,
-      this.onTap,
-      @required this.item,
-      this.selected: false})
-      : assert(animation != null),
-        assert(item != null),
-        assert(selected != null),
+  TodoItemCell({Key key, this.onDelete, @required this.item})
+      : assert(item != null),
         super(key: key);
 
   @override
@@ -29,15 +20,9 @@ class TodoItemCell extends StatefulWidget {
 }
 
 class _TodotemCellState extends State<TodoItemCell> {
-  bool _highlight = false;
-
   @override
   void initState() {
     super.initState();
-  }
-
-  void _handleTap() {
-    widget.onTap();
   }
 
   void _onItemCheckChanged(bool value) {
@@ -48,33 +33,35 @@ class _TodotemCellState extends State<TodoItemCell> {
 
   @override
   Widget build(BuildContext context) {
-    return new SizeTransition(
-        axis: Axis.vertical,
-        sizeFactor: widget.animation,
-        child: new SizedBox(child: _buildCell()));
-  }
+    final ThemeData theme = Theme.of(context);
 
-  Widget _buildCell() {
-    TextStyle textStyleBold = new TextStyle(fontWeight: FontWeight.bold);
-    TextStyle textStyleRegular = new TextStyle(fontWeight: FontWeight.normal);
-    return new Container(
-      color: _highlight ? Theme.of(context).accentColor : Colors.white70,
-      child: new InkWell(
-        onTap: _handleTap,
-        child: new Padding(
-          padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
-          child: new Row(children: <Widget>[
-            new Checkbox(
-                value: widget.item.done, onChanged: _onItemCheckChanged),
-            new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  new Text("${widget.item.name}", style: textStyleBold),
-                  new Text("${widget.item.notes}", style: textStyleRegular)
-                ]),
-          ]),
-        ),
-      ),
+    TextStyle completedTaskStyle = new TextStyle(
+      decoration: new TextDecoration.combine([
+        TextDecoration.lineThrough,
+      ]),
     );
+
+    return new Dismissible(
+        key: new ObjectKey(widget.item),
+        direction: DismissDirection.startToEnd,
+        onDismissed: widget.onDelete,
+        background: new Container(
+            color: theme.primaryColor,
+            child: const ListTile(
+                leading: const Icon(Icons.delete_forever,
+                    color: Colors.white, size: 24.0))),
+        child: new Container(
+            decoration: new BoxDecoration(
+                color: theme.canvasColor,
+                border: new Border(
+                    bottom: new BorderSide(color: theme.dividerColor))),
+            child: new CheckboxListTile(
+              title: new Text(widget.item.name,
+                  style: widget.item.done ? completedTaskStyle : null),
+              subtitle: new Text(widget.item.notes,
+                  style: widget.item.done ? completedTaskStyle : null),
+              onChanged: _onItemCheckChanged,
+              value: widget.item.done,
+            )));
   }
 }
