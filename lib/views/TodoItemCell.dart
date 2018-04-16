@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/TodoItemModel.dart';
+import 'package:todo/views/TodoDetailPage.dart';
 
 /// Displays its integer item as 'item N' on a Card whose color is based on
 /// the item's value. The text is displayed in bright green if selected is true.
@@ -31,6 +32,15 @@ class _TodotemCellState extends State<TodoItemCell> {
     super.initState();
   }
 
+  void _handleTap(TodoItemModel todoItem) {
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        builder: (context) => new TodoDetailPage(item: todoItem,),
+      ),
+    );
+  }
+
   void _onItemCheckChanged(bool value) {
     setState(() {
       widget.todoItem.done = value;
@@ -47,35 +57,55 @@ class _TodotemCellState extends State<TodoItemCell> {
     );
 
     return new Dismissible(
-        key: new ObjectKey(widget.todoItem),
-        direction: DismissDirection.startToEnd,
-        onDismissed: widget.onDelete,
-        background: new Container(
-            color: theme.primaryColor,
-            child: const ListTile(
-                leading: const Icon(Icons.delete_forever,
-                    color: Colors.white, size: 24.0))),
-        child: new Container(
-            decoration: new BoxDecoration(
-                color: theme.canvasColor,
-                border: new Border(
-                    bottom: new BorderSide(color: theme.dividerColor))),
-            child: new ListTile(
-              title: new Text(widget.todoItem.name,
-                  style: widget.todoItem.done ? completedTaskStyle : null),
-              subtitle: new Text(widget.todoItem.notes,
-                  style: widget.todoItem.done ? completedTaskStyle : null),
-              trailing: new Checkbox(
-                  value: widget.todoItem.done, onChanged: _onItemCheckChanged),
-              onTap: null,
-            )));
+      key: new ObjectKey(widget.todoItem),
+      direction: DismissDirection.startToEnd,
+      onDismissed: widget.onDelete,
+      background: new Container(
+        color: theme.primaryColor,
+        child: const ListTile(
+          leading: const Icon(
+            Icons.delete_forever,
+            color: Colors.white,
+            size: 24.0,
+          ),
+        ),
+      ),
+      child: new Container(
+        decoration: new BoxDecoration(
+          color: theme.canvasColor,
+          border: new Border(
+            bottom: new BorderSide(
+              color: theme.dividerColor,
+            ),
+          ),
+        ),
+        child: new ListTile(
+          title: new Text(
+            widget.todoItem.name,
+            style: widget.todoItem.done ? completedTaskStyle : null,
+          ),
+          subtitle: new Text(
+            widget.todoItem.notes,
+            style: widget.todoItem.done ? completedTaskStyle : null,
+          ),
+          trailing: new Checkbox(
+            value: widget.todoItem.done,
+            onChanged: _onItemCheckChanged,
+          ),
+          onTap: ()=>_handleTap(widget.todoItem),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
-        axis: Axis.vertical,
-        sizeFactor: widget.animation,
-        child: new SizedBox(child: _buildCell()));
+      axis: Axis.vertical,
+      sizeFactor: widget.animation,
+      child: new SizedBox(
+        child: _buildCell(),
+      ),
+    );
   }
 }

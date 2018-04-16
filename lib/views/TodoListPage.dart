@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/TodoItemModel.dart';
+import 'package:todo/views/TodoDetailPage.dart';
 import 'package:todo/views/TodoItemCell.dart';
 
 class TodoListPage extends StatefulWidget {
@@ -60,25 +61,34 @@ class _TodoListPageState extends State<TodoListPage> {
   // TODO : Mutual access on list when item delete (cause crash on debug mode)
   void _handleDelete(int index, TodoItemModel todoItem) {
     _list._elementList.removeAt(index);
-    _list._animatedList.removeItem(index,
-        (BuildContext context, Animation<double> animation) {
-      return null;
-    });
+    _list._animatedList.removeItem(
+      index,
+      (BuildContext context, Animation<double> animation) {
+        return null;
+      },
+    );
 
-    Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text('You deleted an item'),
-        action: new SnackBarAction(
-            label: 'UNDO',
-            onPressed: () {
-              _handleCreate(index, todoItem);
-            })));
+    Scaffold.of(context).showSnackBar(
+          new SnackBar(
+            content: new Text('You deleted an item'),
+            action: new SnackBarAction(
+              label: 'UNDO',
+              onPressed: () {
+                _handleCreate(index, todoItem);
+              },
+            ),
+          ),
+        );
   }
 
   // Insert the "next item" into the list model.
-  void _createMockItem() {
-    final int index = _list.length;
-    _list.insert(
-        index, new TodoItemModel("Todo ${index}", "Description row ${index}"));
+  void _createTask() {
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        builder: (context) => new TodoDetailPage(item: new TodoItemModel("", ""),),
+      ),
+    );
   }
 
   // Used to build list items that haven't been removed.
@@ -86,7 +96,10 @@ class _TodoListPageState extends State<TodoListPage> {
       BuildContext context, int index, Animation<double> animation) {
     TodoItemModel todoItem = _list._elementList.elementAt(index);
     return TodoItemCell(
-      onDelete: (DismissDirection direction) => _handleDelete(index, todoItem),
+      onDelete: (DismissDirection direction) => _handleDelete(
+            index,
+            todoItem,
+          ),
       todoItem: todoItem,
       animation: animation,
     );
@@ -109,7 +122,7 @@ class _TodoListPageState extends State<TodoListPage> {
           actions: <Widget>[
             new IconButton(
               icon: const Icon(Icons.add),
-              onPressed: _createMockItem,
+              onPressed: _createTask,
               tooltip: 'Create a new Task',
             ),
           ],
@@ -126,7 +139,7 @@ class _TodoListPageState extends State<TodoListPage> {
 /// This class only exposes as much of the Dart List API as is needed by the
 /// sample app. More list methods are easily added, however methods that mutate the
 /// list must make the same changes to the animated list in terms of
-/// [AnimatedListState.insertItem] and [AnimatedList.removeItem].
+/// [AnimatedListState..insertItem] and [AnimatedList.removeItem].
 class ListModel<E> {
   ListModel({
     @required this.listKey,
@@ -150,10 +163,12 @@ class ListModel<E> {
   E removeAt(int index) {
     final E removedItem = _elementList.removeAt(index);
     if (removedItem != null) {
-      _animatedList.removeItem(index,
-          (BuildContext context, Animation<double> animation) {
-        return removedItemBuilder(removedItem, context, animation);
-      });
+      _animatedList.removeItem(
+        index,
+        (BuildContext context, Animation<double> animation) {
+          return removedItemBuilder(removedItem, context, animation);
+        },
+      );
     }
     return removedItem;
   }
