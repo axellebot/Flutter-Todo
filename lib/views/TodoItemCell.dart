@@ -8,11 +8,17 @@ import 'package:todo/models/TodoItemModel.dart';
 /// from 0 to 128 as ther animation varies from 0.0 to 1.0.
 
 class TodoItemCell extends StatefulWidget {
+  final Animation<double> animation;
   final DismissDirectionCallback onDelete;
-  final TodoItemModel item;
+  final TodoItemModel todoItem;
 
-  TodoItemCell({Key key, this.onDelete, @required this.item})
-      : assert(item != null),
+  TodoItemCell(
+      {Key key,
+      @required this.animation,
+      this.onDelete,
+      @required this.todoItem})
+      : assert(animation != null),
+        assert(todoItem != null),
         super(key: key);
 
   @override
@@ -27,12 +33,11 @@ class _TodotemCellState extends State<TodoItemCell> {
 
   void _onItemCheckChanged(bool value) {
     setState(() {
-      widget.item.done = value;
+      widget.todoItem.done = value;
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildCell() {
     final ThemeData theme = Theme.of(context);
 
     TextStyle completedTaskStyle = new TextStyle(
@@ -42,7 +47,7 @@ class _TodotemCellState extends State<TodoItemCell> {
     );
 
     return new Dismissible(
-        key: new ObjectKey(widget.item),
+        key: new ObjectKey(widget.todoItem),
         direction: DismissDirection.startToEnd,
         onDismissed: widget.onDelete,
         background: new Container(
@@ -55,13 +60,22 @@ class _TodotemCellState extends State<TodoItemCell> {
                 color: theme.canvasColor,
                 border: new Border(
                     bottom: new BorderSide(color: theme.dividerColor))),
-            child: new CheckboxListTile(
-              title: new Text(widget.item.name,
-                  style: widget.item.done ? completedTaskStyle : null),
-              subtitle: new Text(widget.item.notes,
-                  style: widget.item.done ? completedTaskStyle : null),
-              onChanged: _onItemCheckChanged,
-              value: widget.item.done,
+            child: new ListTile(
+              title: new Text(widget.todoItem.name,
+                  style: widget.todoItem.done ? completedTaskStyle : null),
+              subtitle: new Text(widget.todoItem.notes,
+                  style: widget.todoItem.done ? completedTaskStyle : null),
+              trailing: new Checkbox(
+                  value: widget.todoItem.done, onChanged: _onItemCheckChanged),
+              onTap: null,
             )));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new SizeTransition(
+        axis: Axis.vertical,
+        sizeFactor: widget.animation,
+        child: new SizedBox(child: _buildCell()));
   }
 }
