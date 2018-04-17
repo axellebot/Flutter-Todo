@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/TodoItemModel.dart';
-import 'package:todo/views/TodoDetailPage.dart';
+import 'package:todo/pages/TodoDetailPage.dart';
 
 /// Displays its integer item as 'item N' on a Card whose color is based on
 /// the item's value. The text is displayed in bright green if selected is true.
@@ -9,17 +9,11 @@ import 'package:todo/views/TodoDetailPage.dart';
 /// from 0 to 128 as ther animation varies from 0.0 to 1.0.
 
 class TodoItemCell extends StatefulWidget {
-  final Animation<double> animation;
-  final DismissDirectionCallback onDelete;
   final TodoItemModel todoItem;
+  final DismissDirectionCallback onDismissed;
 
-  TodoItemCell(
-      {Key key,
-      @required this.animation,
-      this.onDelete,
-      @required this.todoItem})
-      : assert(animation != null),
-        assert(todoItem != null),
+  TodoItemCell({Key key, @required this.todoItem, this.onDismissed})
+      : assert(todoItem != null),
         super(key: key);
 
   @override
@@ -36,7 +30,9 @@ class _TodotemCellState extends State<TodoItemCell> {
     Navigator.push(
       context,
       new MaterialPageRoute(
-        builder: (context) => new TodoDetailPage(item: todoItem,),
+        builder: (context) => new TodoDetailPage(
+              item: todoItem,
+            ),
       ),
     );
   }
@@ -59,7 +55,7 @@ class _TodotemCellState extends State<TodoItemCell> {
     return new Dismissible(
       key: new ObjectKey(widget.todoItem),
       direction: DismissDirection.startToEnd,
-      onDismissed: widget.onDelete,
+      onDismissed: widget.onDismissed,
       background: new Container(
         color: theme.primaryColor,
         child: const ListTile(
@@ -92,7 +88,7 @@ class _TodotemCellState extends State<TodoItemCell> {
             value: widget.todoItem.done,
             onChanged: _onItemCheckChanged,
           ),
-          onTap: ()=>_handleTap(widget.todoItem),
+          onTap: () => _handleTap(widget.todoItem),
         ),
       ),
     );
@@ -100,12 +96,8 @@ class _TodotemCellState extends State<TodoItemCell> {
 
   @override
   Widget build(BuildContext context) {
-    return new SizeTransition(
-      axis: Axis.vertical,
-      sizeFactor: widget.animation,
-      child: new SizedBox(
-        child: _buildCell(),
-      ),
+    return new SizedBox(
+      child: _buildCell(),
     );
   }
 }

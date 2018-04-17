@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/TodoItemModel.dart';
-import 'package:todo/views/TodoItemCell.dart';
 
 class TodoDetailPage extends StatefulWidget {
   TodoDetailPage({Key key, this.item}) : super(key: key);
@@ -28,8 +27,8 @@ class _TodoDetailPageState extends State<TodoDetailPage> {
   @override
   void initState() {
     super.initState();
-    _nameController =new TextEditingController(text: widget.item.name);
-    _notesController=new TextEditingController(text: widget.item.notes);
+    _nameController = new TextEditingController(text: widget.item.name);
+    _notesController = new TextEditingController(text: widget.item.notes);
   }
 
   void _handleSave() {

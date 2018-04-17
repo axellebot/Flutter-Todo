@@ -7,6 +7,7 @@ class TodoItemModel {
   String notes;
   bool done;
 
+
   TodoItemModel(this.name,this.notes){
     this.id = uuid.v4();
     this.done=false;
@@ -43,4 +44,10 @@ class TodoItemModel {
   void set todo_item_done(bool done){
     this.done=done;
   }
+
+  @override
+  String toString() {
+    return 'TodoItemModel{id: $id, name: $name, notes: $notes, done: $done}';
+  }
+
 }
