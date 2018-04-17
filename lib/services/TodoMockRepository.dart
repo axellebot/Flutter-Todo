@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:todo/models/TodoItemModel.dart';
-import 'package:todo/services/Repository.dart';
+import 'package:todo/services/IRepository.dart';
 
-class TodoMockRepository implements Repository<TodoItemModel> {
+class TodoMockRepository implements IRepository<TodoItemModel> {
   List<TodoItemModel> _list;
 
   TodoMockRepository() {
     _list = new List<TodoItemModel>.generate(16, (int index) {
-      return new TodoItemModel('Name $index', 'Notes $index');
+      return new TodoItemModel(name: 'Name $index', notes: 'Notes $index');
     });
   }
 
@@ -27,12 +27,12 @@ class TodoMockRepository implements Repository<TodoItemModel> {
   @override
   Future<TodoItemModel> getItem(String id) {
     TodoItemModel _item = _list.where((e) => e.id == id).first;
-    return Future.value(_item);
+    return Future.value(new TodoItemModel.from(_item));
   }
 
   @override
   Future<List<TodoItemModel>> getItems() {
-    return Future.value(_list);
+    return Future.value(new List<TodoItemModel>.from(_list));
   }
 
   @override

@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/TodoItemModel.dart';
+import 'package:todo/presenters/TodoDetailPresenter.dart';
+import 'package:todo/views/TodoDetailView.dart';
 
 class TodoDetailPage extends StatefulWidget {
-  TodoDetailPage({Key key, this.item}) : super(key: key);
+  TodoDetailPage({Key key, @required this.item}) : super(key: key);
 
   final TodoItemModel item;
 
@@ -20,18 +22,44 @@ class TodoDetailPage extends StatefulWidget {
   _TodoDetailPageState createState() => new _TodoDetailPageState();
 }
 
-class _TodoDetailPageState extends State<TodoDetailPage> {
+class _TodoDetailPageState extends State<TodoDetailPage>
+    implements TodoDetailView {
   TextEditingController _nameController;
   TextEditingController _notesController;
+  TodoDetailPresenter _presenter;
+  bool _isLoadingTask;
+
+  _TodoDetailPageState() {
+    _presenter = TodoDetailPresenter(this);
+  }
+
+  @override
+  void showSaveTaskComplete(int succeed) {
+    setState(() {
+      _isLoadingTask = false;
+    });
+  }
+
+  @override
+  void showSaveTaskError() {
+    setState(() {
+      _isLoadingTask = false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _isLoadingTask = false;
     _nameController = new TextEditingController(text: widget.item.name);
     _notesController = new TextEditingController(text: widget.item.notes);
   }
 
   void _handleSave() {
+    this.widget.item.name = _nameController.text;
+    this.widget.item.notes = _notesController.text;
+
+    _presenter.saveTodoItem(this.widget.item);
     Navigator.pop(context);
   }
 
@@ -41,6 +69,7 @@ class _TodoDetailPageState extends State<TodoDetailPage> {
         padding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 5.0),
         child: new Column(
           children: <Widget>[
+            new Text(widget.item.id),
             new TextField(
               controller: _nameController,
               decoration: new InputDecoration(
@@ -77,53 +106,4 @@ class _TodoDetailPageState extends State<TodoDetailPage> {
           builder: _buildBody,
         ));
   }
-}
-
-/// Keeps a Dart List in sync with an AnimatedList.
-///
-/// The [insert] and [removeAt] methods apply to both the internal list and the
-/// animated list that belongs to [listKey].
-///
-/// This class only exposes as much of the Dart List API as is needed by the
-/// sample app. More list methods are easily added, however methods that mutate the
-/// list must make the same changes to the animated list in terms of
-/// [AnimatedListState.insertItem] and [AnimatedList.removeItem].
-class ListModel<E> {
-  ListModel({
-    @required this.listKey,
-    @required this.removedItemBuilder,
-    Iterable<E> initialItems,
-  })  : assert(listKey != null),
-        assert(removedItemBuilder != null),
-        _elementList = new List<E>.from(initialItems ?? <E>[]);
-
-  final GlobalKey<AnimatedListState> listKey;
-  final dynamic removedItemBuilder;
-  final List<E> _elementList;
-
-  AnimatedListState get _animatedList => listKey.currentState;
-
-  void insert(int index, E item) {
-    _elementList.insert(index, item);
-    _animatedList.insertItem(index);
-  }
-
-  E removeAt(int index) {
-    final E removedItem = _elementList.removeAt(index);
-    if (removedItem != null) {
-      _animatedList.removeItem(
-        index,
-        (BuildContext context, Animation<double> animation) {
-          return removedItemBuilder(removedItem, context, animation);
-        },
-      );
-    }
-    return removedItem;
-  }
-
-  int get length => _elementList.length;
-
-  E operator [](int index) => _elementList[index];
-
-  int indexOf(E item) => _elementList.indexOf(item);
 }

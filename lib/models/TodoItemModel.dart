@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+
 var uuid = new Uuid();
 
 class TodoItemModel {
@@ -7,47 +8,20 @@ class TodoItemModel {
   String notes;
   bool done;
 
-
-  TodoItemModel(this.name,this.notes){
-    this.id = uuid.v4();
-    this.done=false;
+  TodoItemModel({this.id, this.name, this.notes, this.done = false}) {
+    if (this.id == null) this.id = uuid.v4();
   }
 
-  String get todo_item_id{
-    return id;
-  }
-
-  void set todo_item_id(String id){
-    this.id=id;
-  }
-
-  String get todo_item_name{
-    return name;
-  }
-
-  void set todo_item_name(String name){
-    this.name=name;
-  }
-
-  String get todo_item_notes{
-    return notes;
-  }
-
-  void set todo_item_notes(String notes){
-    this.notes=notes;
-  }
-
-  bool get todo_item_done{
-    return done;
-  }
-
-  void set todo_item_done(bool done){
-    this.done=done;
+  factory TodoItemModel.from(TodoItemModel todoItemModel) {
+    return new TodoItemModel(
+        id: todoItemModel.id,
+        name: todoItemModel.name,
+        notes: todoItemModel.notes,
+        done: todoItemModel.done);
   }
 
   @override
   String toString() {
     return 'TodoItemModel{id: $id, name: $name, notes: $notes, done: $done}';
   }
-
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-abstract class Repository<T> {
+abstract class IRepository<T> {
   Future<int> addItem(T item);
   Future<int> updateItem(T item) ;
   Future<int> deleteItem(T item);

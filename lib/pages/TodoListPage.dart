@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/models/TodoItemModel.dart';
@@ -85,8 +83,7 @@ class _TodoListPageState extends State<TodoListPage> implements TodoListView {
   }
 
   // TODO : Mutual access on list when item delete (cause crash on debug mode)
-  void _handleDelete(int index, TodoItemModel todoItem) {
-    print(index);
+  void _handleDelete(TodoItemModel todoItem) {
     _presenter.deleteTodoItem(todoItem);
     setState(() {
       _list.remove(todoItem);
@@ -109,26 +106,25 @@ class _TodoListPageState extends State<TodoListPage> implements TodoListView {
       _scaffoldContext,
       new MaterialPageRoute(
         builder: (_scaffoldContext) => new TodoDetailPage(
-              item: new TodoItemModel("", ""),
+              item: new TodoItemModel(name: "", notes: ""),
             ),
       ),
     );
   }
 
+  Widget _buildItem(BuildContext context, int index) {
+    final TodoItemModel todoItem = _list[index];
+    return new TodoItemCell(
+      todoItem: todoItem,
+      onDismissed: (DismissDirection direction) => _handleDelete(todoItem),
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
     this._scaffoldContext = context;
-    var items = new List<TodoItemCell>();
-    for (int index = 0; index < _list.length; index++) {
-      TodoItemModel todoItem = _list.elementAt(index);
-      items.add(new TodoItemCell(
-        todoItem: todoItem,
-        onDismissed: (DismissDirection direction) =>
-            _handleDelete(index, todoItem),
-      ));
-    }
-
-    return new ListView(
-      children: items,
+    return new ListView.builder(
+      itemCount: _list.length,
+      itemBuilder: _buildItem,
     );
   }
 

@@ -1,18 +1,18 @@
 import 'package:todo/models/TodoItemModel.dart';
-import 'package:todo/services/Repository.dart';
+import 'package:todo/services/IRepository.dart';
 import 'package:todo/services/TodoLocalRepository.dart';
 import 'package:todo/services/TodoMockRepository.dart';
 
 class TodoRepositoryFactory {
-  Repository<TodoItemModel> createRepository() {
+  IRepository<TodoItemModel> createRepository() {
     return createMockRepository();
   }
 
-  Repository<TodoItemModel> createMockRepository() {
+  IRepository<TodoItemModel> createMockRepository() {
     return new TodoMockRepository();
   }
 
-  Repository<TodoItemModel> createLocalRepository() {
+  IRepository<TodoItemModel> createLocalRepository() {
     return new TodoLocalRepository();
   }
 }

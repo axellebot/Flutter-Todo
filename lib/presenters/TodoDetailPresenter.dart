@@ -1,36 +1,27 @@
 import 'package:todo/models/TodoItemModel.dart';
 import 'package:todo/services/Injector.dart';
 import 'package:todo/services/IRepository.dart';
-import 'package:todo/views/TodoListView.dart';
+import 'package:todo/views/TodoDetailView.dart';
 
-class TodoListPresenter {
-  TodoListView _view;
+class TodoDetailPresenter {
+  TodoDetailView _view;
   IRepository<TodoItemModel> _repository;
 
-  TodoListPresenter(this._view) {
+  TodoDetailPresenter(this._view) {
     _repository = Injector.todoRepository;
-  }
-
-  void loadTodoList() {
-    assert(_view != null);
-
-    _repository.getItems().then((tasks) {
-      _view.showLoadingTasksComplete(tasks);
-    }).catchError((onError) {
-      print(onError);
-      _view.showLoadingTasksError();
-    });
   }
 
   void saveTodoItem(TodoItemModel todoItem) {
     assert(_view != null);
-
-    _repository.addItem(todoItem).then((int) {}).catchError((onError) {});
+    _repository.addItem(todoItem).then((int succeed) {
+      _view.showSaveTaskComplete(succeed);
+    }).catchError((onError) {
+      _view.showSaveTaskError();
+    });
   }
 
   void deleteTodoItem(TodoItemModel todoItem) {
     assert(_view != null);
-
     _repository.deleteItem(todoItem).then((int) {}).catchError((onError) {});
   }
 }

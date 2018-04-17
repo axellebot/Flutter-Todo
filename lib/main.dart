@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:todo/pages/TodoListPage.dart';
+import 'package:todo/services/Injector.dart';
 
-void main() => runApp(new TodoApp());
+
+void main() {
+  Injector.configure(Flavor.MOCK);
+  runApp(new TodoApp());
+}
 
 class TodoApp extends StatelessWidget {
   // This widget is the root of your application.

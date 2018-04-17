@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:todo/models/TodoItemModel.dart';
-import 'package:todo/services/Repository.dart';
+import 'package:todo/services/IRepository.dart';
 
-class TodoLocalRepository  implements Repository<TodoItemModel>{
+class TodoLocalRepository  implements IRepository<TodoItemModel>{
   @override
   Future<int> addItem(TodoItemModel item) async{
     // TODO: implement addItem
